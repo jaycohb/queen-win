@@ -19,7 +19,7 @@ client.once("disconnect", () => {
 client.on("message", async message => {
     if (message.author.bot) return;
 
-    if (message.content === `polska gurom`) {
+    if (message.content === `es`) {
         execute(message);
         return;
     }
@@ -36,12 +36,24 @@ async function execute(message) {
         url: songInfo.videoDetails.video_url,
     };
 
+    const songInfoNew = await ytdl.getInfo('https://www.youtube.com/watch?v=wGeFVtLo1RA');
+    const songNew = {
+        title: songInfoNew.videoDetails.title,
+        url: songInfoNew.videoDetails.video_url,
+    }
+
     playing = true;
     const dispatcher = connection
         .play(ytdl(song.url))
         .on("finish", () => {
-            voiceChannel.leave();
-            playing = false;
+            const dispatcherNew = connection
+                .play(ytdl(songNew.url))
+                .on("finish", () => {
+                    voiceChannel.leave();
+                    playing = false;
+                })
+
+            dispatcherNew.setVolumeLogarithmic(1);
         })
 
     dispatcher.setVolumeLogarithmic(1);
